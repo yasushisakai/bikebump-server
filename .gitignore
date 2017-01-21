@@ -1,5 +1,10 @@
 .DS_Store
 
+lib/
+data/
+config/
+
+
 # Logs
 logs
 *.log
