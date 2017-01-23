@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "production": "babel src -d lib --presets=babili",
-    "start": "babel src -d lib && cp -r ../web/dist/ ./lib/dist/ &&node ./lib/index.js"
+    "production": "babel src -d lib --presets=babili && cp -r ../web/dist/ ./lib && pm2 restart bikebump",
+    "start": "babel src -d lib && cp -r ../web/dist/ ./lib/ &&node ./lib/index.js"
   },
   "repository": {
     "type": "git",
