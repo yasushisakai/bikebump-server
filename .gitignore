@@ -2,7 +2,7 @@
 
 lib/
 data/
-config/
+config/*.json
 
 
 # Logs

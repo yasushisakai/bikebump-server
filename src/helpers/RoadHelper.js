@@ -3,6 +3,7 @@ import fs  from 'fs'
 import path  from 'path'
 import Point  from './Point'
 import Line  from './Line'
+import { ref } from './firebase'
 
 /**
  * RoadHelper class
@@ -14,14 +15,42 @@ export default class RoadHelper {
         this.roadsData = JSON.parse(fs.readFileSync(exportedRoadsPath))
         this.roads = Object.keys(this.roadsData).map((key)=>(this.roadsData[key])) // its already an array....
         this.distanceThreshold = 30 // used to chip off unrelavent reports
+
     }
+
+    /**
+    * addRoadToFB
+    * adds the road to FB /roads branch
+    * first checks if it is already there..
+    */
+    addRoadToFB (road) {
+
+        ref.child(`roads/${road.roadId}`).once('value')
+            .then((snapshot)=>{
+                const roadInServer = snapshot.val()
+                if(roadInServer === null){
+                    ref.child(`roads/${road.roadId}`).set(road) //FIXME: strip properties with empty string
+                        .then(()=>{console.log(`added road to FB: ${road.roadId}`)}) 
+                }
+            })
+            .catch((error)=>{
+                console.log(error)
+            })
+    }
+
 
     /**
     * getRoad
     * returns the road information
     */
     getRoad (id) {
-       return this.roadsData[id]
+        let road = this.roadsData[id]
+        const roadId = road.id
+        delete road.id
+        return {
+            ...road,
+            roadId:id
+        }
     }
 
     /**
@@ -81,6 +110,14 @@ export default class RoadHelper {
         result.closestPt = closestPt
         result.distance = minDistance
         result.roadLine = roadLine
+
+        // only adds if its in certain range
+        if( minDistance<this.distanceThreshold ){
+            closestRoad = {...closestRoad, roadId:closestRoad.id}
+            delete closestRoad.id
+            this.addRoadToFB(closestRoad)
+        }
+
         return result
     }
 }

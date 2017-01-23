@@ -35,9 +35,7 @@ export default class Utilities {
      */
     static convertColorValuesToHex(_num) {
         let hexString = Number(_num).toString(16);
-
         return hexString.length == 1 ? '0' + hexString : hexString;
-
     }
 
     /**
