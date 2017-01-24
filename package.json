@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build" : "babel src -d lib",
-    "production": "babel src -d lib --presets=babili && cp -r ../web/dist/ ./lib && pm2 restart bikebump",
+    "production": "babel src -d lib --presets=babili && cp -r ../web/dist/ ./lib",
     "start": "babel src -d lib && cp -r ../web/dist/ ./lib/ &&node ./lib/index.js"
   },
   "repository": {
