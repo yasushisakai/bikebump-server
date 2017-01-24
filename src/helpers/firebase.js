@@ -15,6 +15,25 @@ firebase.initializeApp({
 const db = firebase.database()
 export const ref = db.ref()
 
+
+export function listenToDings (callback,errorCallback) {
+  ref.child('dings').on('value',(snapshot)=>{
+    const dings = snapshot.val() || {}
+    callback(dings)
+  },errorCallback)
+}
+
+export function addDingFB(ding){
+  const dingId = ref.child(`dings`).push().key
+  return ref.child(`dings/${dingId}`).set({...ding,dingId})
+}
+
+export function appendDingFB(dingId, timestampData){
+  return ref.child(`dings/${dingId}/timestamps/${timestampData.timestamp}`).set(timestampData)
+}
+
+
+
 //
 // auth stuff
 //

@@ -1,6 +1,7 @@
 import express from 'express'
 import bodyParser from 'body-parser'
 import path from 'path'
+import Dings from './helpers/Dings'
 import RoadHelper from './helpers/RoadHelper'
 import { ref, registerAnonymous, getAccessToken  } from './helpers/firebase'
 import Utilities from './helpers/Utilities'
@@ -10,6 +11,8 @@ app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
 
 const roadHelper = new RoadHelper()
+const dings = new Dings()
+
 const portNum = 8080
 const distRoot = path.resolve(__dirname,'../lib','dist')
 
@@ -35,6 +38,27 @@ api_endpoints.get('/road/closest',(req,res)=>{
       distance,
       roadLine
       ))
+})
+
+// POST
+// api/dings/add
+// params (body, x-www-from-urlencoded)
+// lat:number
+// lat:number
+// uid:string
+// timestamp:number
+// value:number
+//
+api_endpoints.post('/dings/add/',(req,res)=>{
+  const lat = req.body.lat
+  const lng = req.body.lng
+  const uid = req.body.uid
+  const timestamp = req.body.timestamp
+  const value = req.body.value
+  
+  dings.addDing(lat,lng,uid,timestamp,value)
+  res.json(['success'])
+
 })
 
 //

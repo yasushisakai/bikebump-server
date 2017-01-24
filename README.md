@@ -53,6 +53,27 @@ result:
 - details on the geometry are in [LineString](https://msdn.microsoft.com/en-us/library/bb895372.aspx), and [MultiLineString](http://wiki.openstreetmap.org/wiki/Relation:multilinestring)
 - working example: [https://bikebump.media.mit.edu/api/road/263564405/](https://bikebump.media.mit.edu/api/road/263564405/)
 
+### 3. add a ding
+
+POST
+``` https://bikebump.media.mit.edu/api/dings/add ```
+
+```
+params (body, x-www-from-urlencoded)
+  lat:number
+  lat:number
+  uid:string
+  timestamp:number
+  value:number
+```
+
+result:
+
+```json
+['success']
+```
+- handles add or append to existing ding, just need to send
+
 ## to start dev server
 to run this you will need a few files. Request it from yasushi put them
 in the directories as mentioned below.

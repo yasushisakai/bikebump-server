@@ -1,3 +1,6 @@
+// FIXME, we don't need to make this a class
+
+
 export default class Utilities {
 
     /**
@@ -127,7 +130,7 @@ export default class Utilities {
         return d;
     }
 
-    static formatRoad(roadId,name,closestPt,distance,closestLine){
+    static formatRoad(roadId, name, closestPt, distance, closestLine) {
         return {
             roadId,
             name,
@@ -137,4 +140,23 @@ export default class Utilities {
         }
     }
 
+    static formatDing(lat, lng, uid, timestamp, value) {
+        const initialTimeStamp = {
+            timestamp,
+            uid,
+            value
+        }
+        const initialDing = {
+            dingId: '',
+            coordinates: {
+                lat,
+                lng,
+            },
+            roadId: '',
+            radius: 10, // default
+            timestamps: {},
+        }
+        initialDing.timestamps[timestamp] = initialTimeStamp
+        return initialDing
+    }
 }
