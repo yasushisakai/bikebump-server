@@ -23,7 +23,7 @@ result:
 - name may be an empty string
 - distance is in meters
 - backend will check if this road is saved in the firebase if not, backend will add it.
-- working example: [https://bikebump.media.mit.edu/api/road/closest?lng=42.3561917&lat=-71.1030615](https://bikebump.media.mit.edu/api/road/closest?lng=42.3561917&lat=-71.1030615)
+- working example: [https://bikebump.media.mit.edu/api/road/closest?lat=42.3561917&lng=-71.1030615](https://bikebump.media.mit.edu/api/road/closest?lat=42.3561917&lng=-71.1030615)
 - check [https://www.google.com/maps/@42.3561917,-71.1030615,18.73z](https://www.google.com/maps/@42.3561917,-71.1030615,18.73z)
 
 ### 2. get road data
