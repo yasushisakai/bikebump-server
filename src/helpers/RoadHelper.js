@@ -61,7 +61,7 @@ export default class RoadHelper {
      * @returns {{}} : the closest road w/ the closest Point, distance and roadLine(a segment of the road)
      */
     findClosest({lat,lng}){
-        const examinePoint = new Point(lat,lng)
+        const examinePoint = new Point(lng,lat)
         let closestRoad, closestPt, roadLine, minDistance = 100000000
         // TODO: able to use huge 'reduce'?
         this.roads.map((road, index)=> {
@@ -112,7 +112,7 @@ export default class RoadHelper {
         result.roadLine = roadLine
 
         // only adds if its in certain range
-        if( minDistance<this.distanceThreshold ){
+        if( minDistance < this.distanceThreshold ){
             closestRoad = {...closestRoad, roadId:closestRoad.id}
             delete closestRoad.id
             this.addRoadToFB(closestRoad)
