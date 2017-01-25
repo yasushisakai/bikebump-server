@@ -86,6 +86,10 @@ in the directories as mentioned below.
 4. then ```npm install``` && ```npm run start```
 5. check ```localhost:8080```
 
+### node and npm versions
+some version may not work, these are tested enviroments
+- mac(development), npm v3.10.3, node v6.3.0,
+- ubuntu(production), npm v3.10.9, node v7.2.0 
 
 
 
