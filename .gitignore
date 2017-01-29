@@ -1,9 +1,9 @@
 .DS_Store
 
 lib/
-data/
-config/*.json
 
+# admin credential for firebase
+config/bikebump-ea3b1-firebase-adminsdk-ephgk-53ad7855df.json
 
 # Logs
 logs
