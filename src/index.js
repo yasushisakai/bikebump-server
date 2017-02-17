@@ -14,7 +14,7 @@ const roadHelper = new RoadHelper()
 const dings = new Dings()
 
 const portNum = 8080
-const distRoot = path.resolve(__dirname,'../lib')
+const distRoot = path.resolve(__dirname,'../lib/dist')
 
 app.use(express.static(distRoot))
 
