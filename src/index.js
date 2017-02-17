@@ -2,7 +2,7 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import path from 'path'
 import Dings from './helpers/Dings'
-import RoadHelper from './helpers/RoadHelper'
+import { getClosestRoad, fetchRoads } from './helpers/Map'
 import { ref, registerAnonymous, getAccessToken  } from './helpers/firebase'
 import Utilities from './helpers/Utilities'
 
@@ -10,7 +10,6 @@ const app = express()
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
 
-const roadHelper = new RoadHelper()
 const dings = new Dings()
 
 const portNum = 8080
@@ -20,25 +19,6 @@ app.use(express.static(distRoot))
 
 const api_endpoints = express.Router();
 
-//
-//  api/road/closest?lng=42.3552525&lat=-71.1032591
-//
-api_endpoints.get('/road/closest',(req,res)=>{
-  const coordinate ={
-    lat:parseFloat(req.query.lat),
-    lng:parseFloat(req.query.lng),
-  }
-  const {road, closestPt, distance, roadLine } = roadHelper.findClosest(coordinate)
-  
-  res.json(
-    Utilities.formatRoad(
-      road.id,
-      road.name,
-      closestPt,
-      distance,
-      roadLine
-      ))
-})
 
 // POST
 // api/dings/add
@@ -50,8 +30,8 @@ api_endpoints.get('/road/closest',(req,res)=>{
 // value:number
 //
 api_endpoints.post('/dings/add/',(req,res)=>{
-  const lat = req.body.lat
-  const lng = req.body.lng
+  const lat = parseFloat(req.body.lat)
+  const lng = parseFloat(req.body.lng)
   const uid = req.body.uid
   const timestamp = req.body.timestamp
   const value = req.body.value
@@ -59,14 +39,6 @@ api_endpoints.post('/dings/add/',(req,res)=>{
   dings.addDing(lat,lng,uid,timestamp,value)
   res.json(['success'])
 
-})
-
-//
-//  /api/road/8648996
-//
-// FIXME: consistant with closest api!!
-api_endpoints.get('/road/:roadId',(req,res)=>{
-  res.json(roadHelper.getRoad(req.params.roadId)) 
 })
 
 

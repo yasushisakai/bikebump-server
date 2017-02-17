@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build" : "babel src -d lib",
+    "build": "babel src -d lib",
     "production": "babel src -d lib --presets=babili && cp -r ../web/dist ./lib",
     "start": "babel src -d lib && cp -r ../web/dist ./lib &&node ./lib/index.js"
   },
@@ -26,6 +26,7 @@
     "babel-preset-stage-0": "^6.22.0"
   },
   "dependencies": {
+    "axios": "^0.15.3",
     "body-parser": "^1.16.0",
     "express": "^4.14.0",
     "firebase-admin": "^4.0.5"

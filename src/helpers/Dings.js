@@ -3,10 +3,14 @@ import {
   listenToDings,
   addDingFB,
   appendDingFB,
+  addRoadFB
 } from './firebase'
 
 import RoadHelper from './RoadHelper'
 import Utilities from './Utilities'
+
+import { getClosestRoad, fetchRoads } from './Map'
+
 
 export default class Dings {
 
@@ -40,17 +44,30 @@ export default class Dings {
     if(minimalDistance < 10){
       // append
       const timestampData = {
-        timestamp,
         uid,
         value,
       }
       return appendDingFB(closestDing,timestampData)
     }else{
       // create ding
-      const closestRoad = this.roadHelper.findClosest({lat,lng})
-      const newDing = Utilities.formatDing(lat,lng,uid,timestamp, value)
-      newDing.roadId = closestRoad.road.id
-      return addDingFB(newDing)
+    return fetchRoads(lat,lng)
+      .then(roads=>getClosestRoad(lat,lng,roads))
+      .then(closestRoad=>{
+
+        addRoadFB(closestRoad.road)
+
+        return Utilities.formatDing(
+          lat,
+          lng,
+          uid,
+          timestamp,
+          value,
+          closestRoad.point,
+          closestRoad.road.properties.id,
+          )
+        }
+      )
+      .then(newDing=>addDingFB(newDing))
     }
   }
 

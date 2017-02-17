@@ -79,7 +79,7 @@ export default class Point {
     distanceToInMeters(_latLng){
         // this assumes that you are using LatLng values;
 
-        return Utilities.distFromLatLng(this.x,this.y,_latLng.x,_latLng.y)
+        return Utilities.distFromLatLng(this.y,this.x,_latLng.y,_latLng.x)
     }
 
     distanceToWorld(_point) {

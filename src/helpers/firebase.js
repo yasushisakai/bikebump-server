@@ -32,6 +32,10 @@ export function appendDingFB(dingId, timestampData){
   return ref.child(`dings/${dingId}/timestamps/${timestampData.timestamp}`).set(timestampData)
 }
 
+export function addRoadFB(road){
+  return ref.child(`roads/${road.properties.id}`).set(road)
+}
+
 
 
 //
