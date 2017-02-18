@@ -63,6 +63,7 @@ export default class Dings {
           timestamp,
           value,
           closestRoad.point,
+          closestRoad.direction,
           closestRoad.road.properties.id,
           )
         }

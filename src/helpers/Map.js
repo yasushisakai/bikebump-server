@@ -39,25 +39,28 @@ export function getClosestRoad (lat, lng, roads) {
   let closestPoint = null
   let closestDistance = Math.pow(2,50)
   let closestRoad = null
+  let closestDirection = null
 
   roads.map((road)=>{
-    const {distance,point} = getClosestRoadPoint([lat,lng],road)
+    const {distance, point, direction} = getClosestRoadPoint([lat,lng],road)
 
     if(closestDistance > distance){
       closestDistance = distance
       closestPoint = point
       closestRoad = road
+      closestDirection = direction
     }
 
   })
 
-  return {point:closestPoint, distance:closestDistance, road:closestRoad}
+  return {point:closestPoint, distance:closestDistance, road:closestRoad, direction:closestDirection}
 }
 
 export function getClosestRoadPoint (coordinate, road) { 
 
   let closestPoint = null
   let closestDistance = Math.pow(2,50)
+  let direction = null
 
   const coordPoint = new Point(coordinate[1],coordinate[0]) // lng=x, lat=y
   if(road.geometry.type === 'LineString'){
@@ -68,6 +71,7 @@ export function getClosestRoadPoint (coordinate, road) {
         const cp = line.getClosestPointTo(coordPoint)
         const tempDistance = cp.distanceToInMeters(coordPoint)
         if(closestDistance > tempDistance){
+          direction = line.getDirection().unitize()
           closestPoint = cp
           closestDistance = tempDistance
         }
@@ -82,6 +86,7 @@ export function getClosestRoadPoint (coordinate, road) {
           const tempDistance = cp.distanceToInMeters(coordPoint)
 
           if(closestDistance > tempDistance){
+            direction = line.getDirection().unitize()
             closestPoint = cp
             closestDistance = tempDistance
           }
@@ -91,5 +96,5 @@ export function getClosestRoadPoint (coordinate, road) {
     })
   }
 
-  return {distance:closestDistance, point:closestPoint}
+  return {distance:closestDistance, point:closestPoint, direction}
 }

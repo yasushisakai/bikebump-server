@@ -140,7 +140,7 @@ export default class Utilities {
         }
     }
 
-    static formatDing(lat, lng, uid, timestamp, value, closestPoint, roadId) {
+    static formatDing(lat, lng, uid, timestamp, value, closestPoint, direction, roadId) {
         const initialTimeStamp = {
             uid,
             value
