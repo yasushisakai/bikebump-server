@@ -37,7 +37,7 @@ export function addRoadFB(road){
 }
 
 export function addUsersDingFB(uid, dingId){
-  const ref.child(`userDings/${uid}/${dingId}`).set(true)
+  return ref.child(`userDings/${uid}/${dingId}`).set(true)
 }
 
 
