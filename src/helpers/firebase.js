@@ -36,6 +36,9 @@ export function addRoadFB(road){
   return ref.child(`roads/${road.properties.id}`).set(road)
 }
 
+export function addUsersDingFB(uid, dingId){
+  const ref.child(`userDings/${ding.uid}`)
+}
 
 
 //
