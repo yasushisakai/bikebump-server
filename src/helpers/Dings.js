@@ -27,6 +27,8 @@ export default class Dings {
   addDing(lat,lng,uid,timestamp,value) {
     let minimalDistance = 10000000
     let closestDing = ''
+
+    // go through dings in memory
     Object.keys(this.dings).map((dingId) => {
       const ding = this.dings[dingId]
       const distance = Utilities.distFromLatLng(
@@ -41,22 +43,28 @@ export default class Dings {
       }
     })
 
+    // APPEND to exisiting ding
     if(minimalDistance < 10){
-      // append
+
       const timestampData = {
+        timestamp,
         uid,
         value,
       }
-      return appendDingFB(closestDing,timestampData)
-    }else{
-      // create ding
-    return fetchRoads(lat,lng)
+
+      appendDingFB(closestDing,timestampData)
+      return Promise.resolve(closestDing) // server response needs the dingID
+    
+    }else{ // CREATE a new ding
+
+    return fetchRoads(lat,lng) // from mapzen, new feature!
       .then(roads=>getClosestRoad(lat,lng,roads))
       .then(closestRoad=>{
-
+        
         addRoadFB(closestRoad.road)
+        // adds the associated road to the database
 
-        return Utilities.formatDing(
+        return addDingFB(Utilities.formatDing(
           lat,
           lng,
           uid,
@@ -65,10 +73,8 @@ export default class Dings {
           closestRoad.point,
           closestRoad.direction,
           closestRoad.road.properties.id,
-          )
-        }
-      )
-      .then(newDing=>addDingFB(newDing))
+        ))
+      })
     }
   }
 

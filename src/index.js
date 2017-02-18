@@ -37,8 +37,7 @@ api_endpoints.post('/dings/add/',(req,res)=>{
   const value = req.body.value
   
   dings.addDing(lat,lng,uid,timestamp,value)
-  res.json(['success'])
-
+  .then(dingId=>res.json(dingId))
 })
 
 

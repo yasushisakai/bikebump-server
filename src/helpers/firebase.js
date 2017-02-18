@@ -25,11 +25,14 @@ export function listenToDings (callback,errorCallback) {
 
 export function addDingFB(ding){
   const dingId = ref.child(`dings`).push().key
-  return ref.child(`dings/${dingId}`).set({...ding,dingId})
+  ref.child(`dings/${dingId}`).set({...ding,dingId})
+  return Promise.resolve(dingId)
 }
 
 export function appendDingFB(dingId, timestampData){
-  return ref.child(`dings/${dingId}/timestamps/${timestampData.timestamp}`).set(timestampData)
+  const {uid,value} = timestampData
+  return ref.child(`dings/${dingId}/timestamps/${timestampData.timestamp}`)
+    .set({uid,value})
 }
 
 export function addRoadFB(road){
@@ -37,7 +40,7 @@ export function addRoadFB(road){
 }
 
 export function addUsersDingFB(uid, dingId){
-  return ref.child(`userDings/${uid}/${dingId}`).set(true)
+  return ref.child(`userDings/${uid}/${dingId}/ding`).set(true)
 }
 
 
