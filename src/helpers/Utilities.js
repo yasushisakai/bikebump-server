@@ -1,5 +1,5 @@
 // FIXME, we don't need to make this a class
-
+import {dingRadius} from './Dings'
 
 export default class Utilities {
 
@@ -153,7 +153,7 @@ export default class Utilities {
             },
             roadId,
             closestRoadPoint:{lat:closestPoint.y,lng:closestPoint.x},
-            radius: 10, // default
+            radius: dingRadius, // default
             timestamps: {},
         }
         initialDing.timestamps[timestamp] = initialTimeStamp

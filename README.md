@@ -18,10 +18,11 @@ params (body, x-www-from-urlencoded)
 
 result:
 
-```json
-['success']
 ```
-- handles add or append to existing ding, just need to send
+dingId:string
+```
+- handles create or append to existing ding, adds the closest Road info 
+to the database as well
 
 ## to start dev server
 to run this you will need a few files. Request it from yasushi put them

@@ -11,6 +11,7 @@ import Utilities from './Utilities'
 
 import { getClosestRoad, fetchRoads } from './Map'
 
+export const dingRadius = 15 //m
 
 export default class Dings {
 
@@ -44,7 +45,7 @@ export default class Dings {
     })
 
     // APPEND to exisiting ding
-    if(minimalDistance < 10){
+    if(minimalDistance < this.dings[closestRoad].radius){
 
       const timestampData = {
         timestamp,
