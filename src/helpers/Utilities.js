@@ -153,6 +153,7 @@ export default class Utilities {
             },
             roadId,
             closestRoadPoint:{lat:closestPoint.y,lng:closestPoint.x},
+            direction,
             radius: dingRadius, // default
             timestamps: {},
         }

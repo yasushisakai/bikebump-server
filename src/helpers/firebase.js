@@ -25,6 +25,7 @@ export function listenToDings (callback,errorCallback) {
 
 export function addDingFB(ding){
   const dingId = ref.child(`dings`).push().key
+  console.log(ding)
   ref.child(`dings/${dingId}`).set({...ding,dingId})
   return Promise.resolve(dingId)
 }

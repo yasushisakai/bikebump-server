@@ -45,7 +45,7 @@ export default class Dings {
     })
 
     // APPEND to exisiting ding
-    if(minimalDistance < this.dings[closestRoad].radius){
+    if(closestDing !== '' && minimalDistance < this.dings[closestDing].radius){
 
       const timestampData = {
         timestamp,

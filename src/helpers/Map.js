@@ -34,6 +34,20 @@ export function fetchRoads (lat=42.355121, lng=-71.102801, zoom=17) {
     .catch((error)=>{console.log(error)})
 }
 
+function latLngArrayToObject(array){
+  return {lat:array[1],lng:array[0]}
+}
+
+function convertRoadGeometryToLatLngObject(roadGeometry){
+  if(roadGeometry.type==='LineString'){
+    return roadGeometry.coordinates.map((coordinate=>latLngArrayToObject(coordinate)))
+  }else{
+    return roadGeometry.coordinates.map((lineString)=>{
+      return lineString.map(coordinate=>latLngArrayToObject(coordinate))
+    })
+  }
+}
+
 export function getClosestRoad (lat, lng, roads) {
   
   let closestPoint = null
@@ -52,6 +66,10 @@ export function getClosestRoad (lat, lng, roads) {
     }
 
   })
+
+  const latLngObjects = convertRoadGeometryToLatLngObject(closestRoad.geometry)
+
+  closestRoad.geometry.coordinates = latLngObjects
 
   return {point:closestPoint, distance:closestDistance, road:closestRoad, direction:closestDirection}
 }
