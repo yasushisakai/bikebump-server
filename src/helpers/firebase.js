@@ -30,6 +30,15 @@ export function addDingFB(ding){
   return Promise.resolve(dingId)
 }
 
+export function changeTimeStampValue(dingId,timestamp,value){
+  ref.child(`dings/${dingId}/${timestamp}/value`).set(null)
+  ref.child(`dings/${dingId}/timestamps/${timestamp}/value`).set(value)
+}
+
+export function deleteTimeStamp(dingId,timestamp){
+  ref.child(`dings/${dingId}/timestamps/${timestamp}`).set(null)
+}
+
 export function appendDingFB(dingId, timestampData){
   const {uid,value} = timestampData
   return ref.child(`dings/${dingId}/timestamps/${timestampData.timestamp}`)
@@ -44,6 +53,28 @@ export function addUsersDingFB(uid, dingId){
   return ref.child(`userDings/${uid}/${dingId}/ding`).set(true)
 }
 
+export function createPattern(text,budget){
+  const patternId = ref.child('patterns').push().key
+
+  const pattern = {text, budget, patternId}
+
+  return ref.child(`patterns/${patternId}`).set(pattern)
+    .then(()=>patternId)
+}
+
+export function createProposal(roadId,patternId,start,end){
+
+  const proposal = {
+    domain:{start,end},
+    patternId,
+    roadId,
+  }
+
+  const proposalId = ref.child(`proposals/${roadId}`).push().key
+  return ref.child(`proposals/${roadId}/${proposalId}`).set({...proposal,proposalId})
+    .then(()=>proposalId)
+
+}
 
 //
 // auth stuff

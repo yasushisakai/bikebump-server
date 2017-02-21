@@ -3,7 +3,9 @@ import {
   listenToDings,
   addDingFB,
   appendDingFB,
-  addRoadFB
+  addRoadFB,
+  deleteTimeStamp,
+  changeTimeStampValue,
 } from './firebase'
 
 import RoadHelper from './RoadHelper'
@@ -23,6 +25,28 @@ export default class Dings {
 
   updateDings(dings) {
     this.dings = dings
+  }
+
+  updateTimestamps(){
+    Object.keys(this.dings).map(dingId=>{
+      const ding = this.dings[dingId]
+      const timeStampKeys = Object.keys(ding.timestamps)
+      let cnt = 0
+      for(let i=1;i<timeStampKeys.length;i++){
+        const prevTimestamp = timeStampKeys[i-1]
+        const prevRecord = ding.timestamps[prevTimestamp]
+        const timestamp = timeStampKeys[i]
+        const record = ding.timestamps[timestamp]
+
+        const interval = parseInt(timestamp)-parseInt(prevTimestamp)
+        if(interval<6000 && record.uid === prevRecord.uid){
+          //cnt++
+          deleteTimeStamp(dingId,prevTimestamp)
+          changeTimeStampValue(dingId,timestamp,1)
+        }
+      }
+      //console.log(cnt,timeStampKeys.length)
+    })
   }
 
   addDing(lat,lng,uid,timestamp,value) {

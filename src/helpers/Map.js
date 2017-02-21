@@ -25,7 +25,7 @@ export function formatForURL ({z,x,y}){
 // thank you Nina! (https://github.com/ninalutz)
 // https://mapzen.com/projects/vector-tiles/
 //
-export function fetchRoads (lat=42.355121, lng=-71.102801, zoom=17) {
+export function fetchRoads (lat=42.355121, lng=-71.102801, zoom=15) {
   const fileCoordinates = formatForURL(latLng2Tile({lat,lng},zoom))
   const url = `http://tile.mapzen.com/mapzen/vector/v1/roads/${fileCoordinates}.json?api_key=mapzen-Aw74ZDm`
 

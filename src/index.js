@@ -3,7 +3,7 @@ import bodyParser from 'body-parser'
 import path from 'path'
 import Dings from './helpers/Dings'
 import { getClosestRoad, fetchRoads } from './helpers/Map'
-import { ref, registerAnonymous, getAccessToken  } from './helpers/firebase'
+import { ref, registerAnonymous, getAccessToken, createPattern, createProposal  } from './helpers/firebase'
 import Utilities from './helpers/Utilities'
 
 const app = express()
@@ -40,6 +40,29 @@ api_endpoints.post('/dings/add/',(req,res)=>{
   .then(dingId=>res.json(dingId))
 })
 
+api_endpoints.get('/patterns/add/:text/:budget',(req,res)=>{
+  const text = req.params.text
+  const budget = parseInt(req.params.budget)
+  createPattern(text,budget)
+    .then(patternId=>res.json(patternId))
+})
+
+api_endpoints.get('/proposals/add/:roadId/:patternId/:start/:end',(req,res)=>{
+
+  const roadId = req.params.roadId
+  const patternId = req.params.patternId
+  const start = parseFloat(req.params.start)
+  const end = parseFloat(req.params.end)
+
+  createProposal(roadId,patternId,start,end)
+    .then(proposalId=>res.json(proposalId))
+
+})
+
+api_endpoints.get('/updateDings/',(res,req)=>{
+  dings.updateTimestamps()
+  req.json('hi')
+})
 
 //
 // /api/auth/reg
