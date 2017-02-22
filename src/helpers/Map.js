@@ -72,9 +72,10 @@ export function getClosestRoad (lat, lng, roads) {
 
   })
 
-  const latLngObjects = convertRoadGeometryToLatLngObject(closestRoad.geometry)
-
-  closestRoad.geometry.coordinates = latLngObjects
+  if(closestRoad){
+    const latLngObjects = convertRoadGeometryToLatLngObject(closestRoad.geometry)
+    closestRoad.geometry.coordinates = latLngObjects
+  }
 
   return {point:closestPoint, distance:closestDistance, road:closestRoad, direction:closestDirection}
 }
