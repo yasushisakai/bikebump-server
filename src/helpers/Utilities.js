@@ -140,7 +140,7 @@ export default class Utilities {
         }
     }
 
-    static formatDing(lat, lng, uid, timestamp, value, closestPoint, direction, roadId) {
+    static formatDing(lat, lng, uid, timestamp, value) {
         const initialTimeStamp = {
             uid,
             value
@@ -151,12 +151,10 @@ export default class Utilities {
                 lat,
                 lng,
             },
-            roadId,
-            closestRoadPoint:{lat:closestPoint.y,lng:closestPoint.x},
-            direction,
             radius: dingRadius, // default
             timestamps: {},
         }
+
         initialDing.timestamps[timestamp] = initialTimeStamp
         return initialDing
     }

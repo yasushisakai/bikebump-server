@@ -83,23 +83,39 @@ export default class Dings {
     }else{ // CREATE a new ding
 
     return fetchRoads(lat,lng) // from mapzen, new feature!
+      .then(roads=>{
+        return roads.filter((road)=>road.properties.id!==undefined)
+        })
       .then(roads=>getClosestRoad(lat,lng,roads))
       .then(closestRoad=>{
-        
-        addRoadFB(closestRoad.road)
-        // adds the associated road to the database
 
-        return addDingFB(Utilities.formatDing(
-          lat,
-          lng,
-          uid,
-          timestamp,
-          value,
-          closestRoad.point,
-          closestRoad.direction,
-          closestRoad.road.properties.id,
-        ))
+        if(closestRoad.distance<30){
+          addRoadFB(closestRoad.road)
+          const newDing = Utilities.formatDing(
+            lat,
+            lng,
+            uid,
+            timestamp,
+            value,
+          )
+          const road = {
+            point:closestRoad.point,
+            direction: closestRoad.direction,
+            id: closestRoad.road.properties.id,
+          }
+          addDingFB({...newDing, road}) 
+        }else{
+          return addDingFB(Utilities.formatDing(
+            lat,
+            lng,
+            uid,
+            timestamp,
+            value,
+          ))
+        }
+        
       })
+      .catch(error=>console.log(error))
     }
   }
 

@@ -59,10 +59,7 @@ api_endpoints.get('/proposals/add/:roadId/:patternId/:start/:end',(req,res)=>{
 
 })
 
-api_endpoints.get('/updateDings/',(res,req)=>{
-  dings.updateTimestamps()
-  req.json('hi')
-})
+
 
 //
 // /api/auth/reg

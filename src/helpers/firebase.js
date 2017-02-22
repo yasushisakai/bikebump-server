@@ -16,6 +16,7 @@ const db = firebase.database()
 export const ref = db.ref()
 
 
+
 export function listenToDings (callback,errorCallback) {
   ref.child('dings').on('value',(snapshot)=>{
     const dings = snapshot.val() || {}
@@ -25,6 +26,7 @@ export function listenToDings (callback,errorCallback) {
 
 export function addDingFB(ding){
   const dingId = ref.child(`dings`).push().key
+  console.log('addDingFB')
   console.log(ding)
   ref.child(`dings/${dingId}`).set({...ding,dingId})
   return Promise.resolve(dingId)
@@ -41,12 +43,31 @@ export function deleteTimeStamp(dingId,timestamp){
 
 export function appendDingFB(dingId, timestampData){
   const {uid,value} = timestampData
+  console.log('appendDingFB')
+  console.log(dingId,timestampData)
   return ref.child(`dings/${dingId}/timestamps/${timestampData.timestamp}`)
     .set({uid,value})
 }
 
 export function addRoadFB(road){
   return ref.child(`roads/${road.properties.id}`).set(road)
+}
+
+export function getAllRoads () {
+  ref.child('roads').once('value')
+    .then((snapshot)=>snapshot.val())
+}
+
+export function deleteDingsWithRoadId(roadId){
+  ref.child('dings').once('value')
+    .then((snapshot)=>snapshot.val())
+    .then(dings=>{
+      Object.values(dings).map((ding)=>{
+        if(ding.roadId === roadId){
+          ref.child(`dings/${ding.dingId}`).set(null)
+        }
+      })
+    })
 }
 
 export function addUsersDingFB(uid, dingId){

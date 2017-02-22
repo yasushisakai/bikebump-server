@@ -56,13 +56,18 @@ export function getClosestRoad (lat, lng, roads) {
   let closestDirection = null
 
   roads.map((road)=>{
-    const {distance, point, direction} = getClosestRoadPoint([lat,lng],road)
+    //console.log(road.geometry.coordinates[0])
+    if(getRoadTotalDistance(road)>5){
 
-    if(closestDistance > distance){
-      closestDistance = distance
-      closestPoint = point
-      closestRoad = road
-      closestDirection = direction
+      const {distance, point, direction} = getClosestRoadPoint([lat,lng],road)
+      //console.log(distance,point,direction)
+
+      if(closestDistance > distance){
+        closestDistance = distance
+        closestPoint = point
+        closestRoad = road
+        closestDirection = direction
+      }
     }
 
   })
@@ -72,6 +77,28 @@ export function getClosestRoad (lat, lng, roads) {
   closestRoad.geometry.coordinates = latLngObjects
 
   return {point:closestPoint, distance:closestDistance, road:closestRoad, direction:closestDirection}
+}
+
+export function getRoadTotalDistance (road){
+  let dist =0
+
+  if(road.geometry.type==='LineString'){
+    road.geometry.coordinates.map((coord,index)=>{
+      if(index===0) return null
+      const pPoint = Point.fromArray(road.geometry.coordinates[index-1])
+      dist += pPoint.distanceToInMeters(Point.fromArray(coord))
+    })
+  }else if(road.geometry.type==='MultiLineString'){
+    road.geometry.coordinates.map(linestring=>{
+      if(linestring.length < 2) return  
+      linestring.map((coord,index)=>{
+        if(index===0) return null
+        const pPoint = Point.fromArray(linestring[index-1])
+        dist += pPoint.distanceToInMeters(Point.fromArray(coord))
+      })
+    })
+  }
+  return dist
 }
 
 export function getClosestRoadPoint (coordinate, road) { 
