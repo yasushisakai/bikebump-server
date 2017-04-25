@@ -6,8 +6,8 @@ import Point from './Point'
 export default class Line {
 
     constructor(_st, _en) {
-        this.st = _st;
-        this.en = _en;
+        this.st = _st 
+        this.en = _en 
     }
 
     /**
@@ -21,11 +21,11 @@ export default class Line {
     static fromPoint(_point, _direction, _length) {
         // extends a point in both directions
 
-        let unitizedDirection = _direction.unitize();
-        let st = _point.add(unitizedDirection.multiply(_length * 0.5));
-        let en = _point.add(unitizedDirection.flip().multiply(_length * 0.5));
+        let unitizedDirection = _direction.unitize() 
+        let st = _point.add(unitizedDirection.multiply(_length * 0.5)) 
+        let en = _point.add(unitizedDirection.flip().multiply(_length * 0.5)) 
 
-        return new Line(st, en);
+        return new Line(st, en) 
 
     }
 
@@ -36,7 +36,7 @@ export default class Line {
      * @returns {Line}
      */
     static fromObj(obj) {
-        return new Line(Point.fromObj(obj.st), Point.fromObj(obj.en));
+        return new Line(Point.fromObj(obj.st), Point.fromObj(obj.en)) 
     }
 
     /**
@@ -47,11 +47,11 @@ export default class Line {
      * @returns {Line}
      */
     static fromArray(_stArry, _enArry) {
-        return new Line(Point.fromArray(_stArry), Point.fromArray(_enArry));
+        return new Line(Point.fromArray(_stArry), Point.fromArray(_enArry)) 
     }
 
     getLength() {
-        return this.st.distanceTo(this.en);
+        return this.st.distanceTo(this.en) 
     }
 
     /**
@@ -60,11 +60,11 @@ export default class Line {
      * @returns {*}
      */
     getLengthInMeters() {
-        return this.st.distanceToInMeters(this.en);
+        return this.st.distanceToInMeters(this.en) 
     }
 
     getDirection() {
-        return this.en.subtract(this.st);
+        return this.en.subtract(this.st) 
     }
 
     /**
@@ -74,8 +74,8 @@ export default class Line {
      * @returns {*}
      */
     getPointAt(_t) {
-        let delta = this.en.subtract(this.st);
-        return delta.multiply(_t).add(this.st);
+        let delta = this.en.subtract(this.st) 
+        return delta.multiply(_t).add(this.st) 
     }
 
     /**
@@ -85,8 +85,8 @@ export default class Line {
      * @param _vector
      */
     move(_vector) {
-        this.st.move(_vector);
-        this.en.move(_vector);
+        this.st.move(_vector) 
+        this.en.move(_vector) 
     }
 
     /**
@@ -99,20 +99,20 @@ export default class Line {
      */
     getClosestPointTo(_point) {
 
-        let meInWorld = new Line(this.st.latLngToWorld(), this.en.latLngToWorld());
-        let ptInWorld = _point.latLngToWorld();
+        let meInWorld = new Line(this.st.latLngToWorld(), this.en.latLngToWorld()) 
+        let ptInWorld = _point.latLngToWorld() 
 
-        let len = meInWorld.getLength();
+        let len = meInWorld.getLength() 
 
-        let pointToEnd = meInWorld.en.subtract(ptInWorld);
-        let angle = meInWorld.getDirection().angle(pointToEnd);
+        let pointToEnd = meInWorld.en.subtract(ptInWorld) 
+        let angle = meInWorld.getDirection().angle(pointToEnd) 
 
 
-        let t = 1.0 - (pointToEnd.getLength() * Math.cos(angle) / len);
+        let t = 1.0 - (pointToEnd.getLength() * Math.cos(angle) / len) 
 
-        t = Math.max(Math.min(1.0, t), 0.0);
+        t = Math.max(Math.min(1.0, t), 0.0) 
 
-        return this.getPointAt(t);
+        return this.getPointAt(t) 
 
     }
 
@@ -122,7 +122,7 @@ export default class Line {
      * @returns {*[]}
      */
     getArray() {
-        return [this.st.toArray(), this.en.toArray()]
+        return [ this.st.toArray(), this.en.toArray() ]
     }
 
 }

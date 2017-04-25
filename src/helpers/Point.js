@@ -31,7 +31,7 @@ export default class Point {
     }
 
     static fromLatLngObj(obj){
-        return new Point(obj.lat,obj.lng)
+        return new Point(obj.lat, obj.lng)
     }
 
 
@@ -79,7 +79,7 @@ export default class Point {
     distanceToInMeters(_latLng){
         // this assumes that you are using LatLng values;
 
-        return Utilities.distFromLatLng(this.y,this.x,_latLng.y,_latLng.x)
+        return Utilities.distFromLatLng(this.y, this.x, _latLng.y, _latLng.x)
     }
 
     distanceToWorld(_point) {
@@ -111,7 +111,7 @@ export default class Point {
         return new Point(
             Point.getTileSize() * (0.5 + this.y / 360.0),
             Point.getTileSize() * (0.5 - Math.log((1 + sinY) / (1 - sinY)) / (4 * Math.PI))
-        );
+        )
     }
 
     /**
@@ -143,7 +143,7 @@ export default class Point {
     }
 
     toArray() {
-        return [this.x, this.y]
+        return [ this.x, this.y ]
     }
 
 }
