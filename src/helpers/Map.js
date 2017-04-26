@@ -6,8 +6,8 @@ import Point from './Point'
 // MAP helper
 //
 
-function lng2tile(lon, zoom) { return (Math.floor((lon+180)/360*Math.pow(2, zoom)))}
-function lat2tile(lat, zoom)  { return (Math.floor((1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 *Math.pow(2, zoom)))}
+function lng2tile(lon, zoom) { return (Math.floor((lon + 180) / 360 * Math.pow(2, zoom)))}
+function lat2tile(lat, zoom)  { return (Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom)))}
 
 
 export function latLng2Tiles (latLng, z) { //z = zoom
@@ -16,9 +16,9 @@ export function latLng2Tiles (latLng, z) { //z = zoom
   const x = lng2tile(latLng.lng, z)
   const y = lat2tile(latLng.lat, z)
   
-  for(let i=0;i<3;i++){
-    for(let j=0;j<3;j++){
-      coord.push({z, x:x+i-1, y:y+j-1}) // get moore neighborhood
+  for(let i = 0;i < 3;i++){
+    for(let j = 0;j < 3;j++){
+      coord.push({z, x:x + i - 1, y:y + j - 1}) // get moore neighborhood
     }
   }
 
@@ -33,7 +33,7 @@ export function formatForURL ({z, x, y}){
 // thank you Nina! (https://github.com/ninalutz)
 // https://mapzen.com/projects/vector-tiles/
 //
-export function fetchRoads (lat=42.355121, lng=-71.102801, zoom=16) {
+export function fetchRoads (lat = 42.355121, lng = -71.102801, zoom = 16) {
   const fileCoordinates = latLng2Tiles({lat, lng}, zoom)
 
   const promises = fileCoordinates.map((zxy) => {
@@ -78,7 +78,7 @@ export function fetchTile (tileCoord) {
 }
 
 function convertRoadGeometryToLatLngObject(roadGeometry){
-  if(roadGeometry.type==='LineString'){
+  if(roadGeometry.type === 'LineString'){
     return roadGeometry.coordinates.map((coordinate => latLngArrayToObject(coordinate)))
   }else{
     return roadGeometry.coordinates.map((lineString) => {
@@ -96,7 +96,7 @@ export function getClosestRoad (lat, lng, roads) {
 
   roads.map((road) => {
     //console.log(road.geometry.coordinates[0])
-    if(getRoadTotalDistance(road)>5){
+    if(getRoadTotalDistance(road) > 5){
 
       const {distance, point, direction} = getClosestRoadPoint([ lat, lng ], road)
       //console.log(distance,point,direction)
@@ -120,20 +120,20 @@ export function getClosestRoad (lat, lng, roads) {
 }
 
 export function getRoadTotalDistance (road){
-  let dist =0
+  let dist = 0
 
-  if(road.geometry.type==='LineString'){
+  if(road.geometry.type === 'LineString'){
     road.geometry.coordinates.map((coord, index) => {
-      if(index===0) return null
-      const pPoint = Point.fromArray(road.geometry.coordinates[index-1])
+      if(index === 0) return null
+      const pPoint = Point.fromArray(road.geometry.coordinates[index - 1])
       dist += pPoint.distanceToInMeters(Point.fromArray(coord))
     })
-  }else if(road.geometry.type==='MultiLineString'){
+  }else if(road.geometry.type === 'MultiLineString'){
     road.geometry.coordinates.map(linestring => {
       if(linestring.length < 2) return  
       linestring.map((coord, index) => {
-        if(index===0) return null
-        const pPoint = Point.fromArray(linestring[index-1])
+        if(index === 0) return null
+        const pPoint = Point.fromArray(linestring[index - 1])
         dist += pPoint.distanceToInMeters(Point.fromArray(coord))
       })
     })
@@ -152,7 +152,7 @@ export function getClosestRoadPoint (coordinate, road) {
     road.geometry.coordinates.map((coord, index) => {
       if(index !== 0) {
 
-        const line = Line.fromArray(road.geometry.coordinates[index-1], coord)
+        const line = Line.fromArray(road.geometry.coordinates[index - 1], coord)
         const cp = line.getClosestPointTo(coordPoint)
         const tempDistance = cp.distanceToInMeters(coordPoint)
         if(closestDistance > tempDistance){
@@ -166,7 +166,7 @@ export function getClosestRoadPoint (coordinate, road) {
     road.geometry.coordinates.map((coords) => {
       coords.map((coord, index) => {
         if(index !== 0) {
-          const line = Line.fromArray(coords[index-1], coord)
+          const line = Line.fromArray(coords[index - 1], coord)
           const cp = line.getClosestPointTo(coordPoint)
           const tempDistance = cp.distanceToInMeters(coordPoint)
 

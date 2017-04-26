@@ -1,7 +1,8 @@
 /**
  * Created by yasushisakai on 10/20/16.
  */
-import Utilities from '../helpers/Utilities'
+
+import { toRadians, distFromLatLng } from '../helpers/Utilities'
 
 /**
  * Point class
@@ -34,7 +35,6 @@ export default class Point {
         return new Point(obj.lat, obj.lng)
     }
 
-
     flip() {
         return new Point(-this.x, -this.y)
     }
@@ -47,7 +47,6 @@ export default class Point {
 
         if (typeof _other === 'number') {
             return new Point(this.x + _other, this.y + _other)
-
         } else {
             return new Point(this.x + _other.x, this.y + _other.y)
 
@@ -77,9 +76,8 @@ export default class Point {
     }
 
     distanceToInMeters(_latLng){
-        // this assumes that you are using LatLng values;
-
-        return Utilities.distFromLatLng(this.y, this.x, _latLng.y, _latLng.x)
+        // this assumes that you are using LatLng values
+        return distFromLatLng(this.y, this.x, _latLng.y, _latLng.x)
     }
 
     distanceToWorld(_point) {
@@ -91,9 +89,7 @@ export default class Point {
     }
 
     unitize() {
-
         let len = this.getLength()
-
         return new Point(this.x / len, this.y / len)
     }
 
@@ -104,8 +100,7 @@ export default class Point {
      * @returns {Point}
      */
     latLngToWorld() {
-        let sinY = Math.sin(Utilities.toRadians(this.x))
-
+        let sinY = Math.sin(toRadians(this.x))
         sinY = Math.min(Math.max(sinY, -0.9999), 0.9999)
 
         return new Point(
@@ -134,12 +129,9 @@ export default class Point {
     }
 
     angle(_other) {
-
         let unitizedSelf = this.unitize()
         let unitizedOther = _other.unitize()
-
         return Math.acos(unitizedSelf.dot(unitizedOther))
-
     }
 
     toArray() {

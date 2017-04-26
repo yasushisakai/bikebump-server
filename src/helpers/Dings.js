@@ -7,19 +7,17 @@ import {
   changeTimeStampValue,
 } from './firebase'
 
-import RoadHelper from './RoadHelper'
 import Utilities from './Utilities'
 
 import { getClosestRoad, fetchRoads } from './Map'
 
 export const dingRadius = 15 //m
 
-export default class Dings {
+export default class DingsManager {
 
   constructor() {
     this.dings = {}
     listenToDings(this.updateDings.bind(this))
-    this.roadHelper = new RoadHelper()
   }
 
   updateDings(dings) {
@@ -30,14 +28,14 @@ export default class Dings {
     Object.keys(this.dings).map(dingId => {
       const ding = this.dings[dingId]
       const timeStampKeys = Object.keys(ding.timestamps)
-      for(let i=1; i<timeStampKeys.length; i++){
-        const prevTimestamp = timeStampKeys[i-1]
+      for(let i = 1; i < timeStampKeys.length; i++){
+        const prevTimestamp = timeStampKeys[i - 1]
         const prevRecord = ding.timestamps[prevTimestamp]
         const timestamp = timeStampKeys[i]
         const record = ding.timestamps[timestamp]
 
-        const interval = parseInt(timestamp)-parseInt(prevTimestamp)
-        if(interval<6000 && record.uid === prevRecord.uid){
+        const interval = parseInt(timestamp) - parseInt(prevTimestamp)
+        if(interval < 6000 && record.uid === prevRecord.uid){
           //cnt++
           deleteTimeStamp(dingId, prevTimestamp)
           changeTimeStampValue(dingId, timestamp, 1)
@@ -81,12 +79,12 @@ export default class Dings {
 
     return fetchRoads(lat, lng) // from mapzen, new feature!
       .then(roads => {
-        return roads.filter((road) => road.properties.id!==undefined)
+        return roads.filter((road) => road.properties.id !== undefined)
         })
       .then(roads => getClosestRoad(lat, lng, roads))
       .then(closestRoad => {
 
-        if(closestRoad.distance<30){
+        if(closestRoad.distance < 30){
           addRoadFB(closestRoad.road)
           const newDing = Utilities.formatDing(
             lat,
