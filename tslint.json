@@ -5,13 +5,13 @@
     ],
     "jsRules": {},
     "rules": {
-		"semicolon" : [true, "never"],
-		"space-before-function-paren" : [true, "always"],
-		"trailing-comma": [true, {"multiline": "always", "singleline": "never"}],
-		"arrow-return-shorthand": [true],
-		"quotemark" : [true, "single", "jsx-escape"]
-    "indent" : [true, "spaces"],
-    "no-ununsed-variable" : [true]
+      "semicolon" : [true, "never"],
+      "space-before-function-paren" : [true, "always"],
+      "trailing-comma": [true, {"multiline": "always", "singleline": "never"}],
+      "arrow-return-shorthand": [true],
+      "quotemark" : [true, "single", "jsx-escape"],
+      "indent" : [true, "spaces"],
+      "no-ununsed-variable" : [true]
     },
     "rulesDirectory": []
 }
