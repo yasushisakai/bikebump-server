@@ -1,33 +1,26 @@
-import * as bodyParser from 'body-parser'
+import { json, urlencoded } from 'body-parser'
 import * as express from 'express'
-import * as path from 'path'
+import { resolve } from 'path'
+import { ApiController } from './controllers'
 
-const app = express()
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json)
+const app: express.Application = express()
+const port: number = process.env.port || 8080
+const distRoot: string = resolve(__dirname, '../lib/dist')
 
-const portNumber : number = 8080
-const distRoot : string = path.resolve(__dirname, '../lib/dist')
+app.use(urlencoded({extended: false}))
+app.use(json())
 
+// serve static files in general
 app.use(express.static(distRoot))
 
-// important!!
-app.post('/api/dings/add', (req, res) => {
-  const lat : number = parseFloat(req.body.lat)
-  const lng : number = parseFloat(req.body.lng)
-  const uid : string = req.body.uid
-  const timestamp : number = parseInt(req.body.timestamp)
-  const value : number = parseInt(req.body.value) 
+// other API stuff goes inside
+app.use('/api', ApiController)
+
+app.get('/test', (req: express.Request, res: express.Response) => {
+  console.log('hello')
   res.json('hello')
 })
 
-app.get('/api/test/', (req, res) => {
-	console.log('anyone here?')
-  res.json('test')
-})
-
-
-// start the server!
-app.listen(portNumber, () => {
-  console.log(`app running in port ${portNumber}`)
+app.listen(port, () => {
+  console.log(`Listening at port: ${port}`)
 })
