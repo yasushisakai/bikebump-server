@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { Request, Response, Router } from 'express'
-import { fetchRoadsfromLatLng, filterShortRoads, ILatLng} from '../helpers/Map'
+import { fetchRoadsfromLatLng, filterShortRoads, ILatLng, roadsClosestPoint} from '../helpers/Map'
 
 const router: Router = Router()
 
@@ -24,6 +24,7 @@ router.get('/closestRoad', (req: Request, res: Response) => {
   const latLng: ILatLng = {lat: parseFloat(lat), lng: parseFloat(lng)}
   fetchRoadsfromLatLng(latLng)
     .then((roads) => roads.filter((road) => filterShortRoads(road)))
+    .then((roads) => roadsClosestPoint(roads, latLng))
     .then((roads) => res.json(roads))
     .catch((error) => console.error(error))
 })

@@ -13,6 +13,11 @@ interface ITile {
   z: number
 }
 
+interface IClosestPoint {
+  cp: ILatLng
+  dist: number
+}
+
 // converts a ILatLng to IPoint so called world coordinate
 function latLngToWorld (latLng: ILatLng): IPoint {
   let sinY = Math.sin(toRadians(latLng.lat))
@@ -119,26 +124,62 @@ export function filterShortRoads (road: any): boolean {
   return roadLength(road) > ROADLENGTHTHRESHOLD
 }
 
-function lineStringClosestPoint (road: any, latLng: ILatLng): {cp: ILatLng, dist: number} {
-  let closestDist: number = 10000000000
+function lineStringClosestPoint (coordinates: number[][], latLng: ILatLng): IClosestPoint  {
   let closestPoint: IPoint
   const worldExaminePt: IPoint = latLngToWorld(latLng)
-  road.coordinates
-    .map((coordinate) => parseLatLng(coordinate))
-    .map((_, cId, array) => {
+  const closestDist: number = coordinates.map((coordinate) => parseLatLng(coordinate))
+      .reduce((currentClosestDist, coordinate, cId, array) => {
       if (cId !== 0) {
+        // create line segment
         const start: IPoint = latLngToWorld(array[cId - 1])
         const end: IPoint = latLngToWorld(array[cId]) // latLng
         const line: ILine = {start, end}
+        // line, point closest point
         const cp = closestPointFromLine(worldExaminePt, line)
         const dist = distance(cp, worldExaminePt)
         if (dist < closestDist) {
-          closestDist = dist
           closestPoint = cp
+          return dist
+        } else {
+          return currentClosestDist
         }
+      } else {
+        return currentClosestDist
       }
-    })
+    }, 100000000)
   const cp = worldToLatLng(closestPoint)
   const dist = latLngDistance(cp, latLng)
   return {cp, dist}
+}
+
+// MultiLineStrings are just one dimension deeper, it's an array of LineStrings
+function multiLineStringClosestPoint (coordinates: number[][][], latLng: ILatLng): IClosestPoint {
+  return coordinates
+    .reduce((currentClosestPoint, lineString) => {
+      const tempClosest: IClosestPoint = lineStringClosestPoint(lineString, latLng)
+      return currentClosestPoint.dist > tempClosest.dist ? tempClosest : currentClosestPoint
+    }, {cp: null, dist: 1000000000000})
+}
+
+// get the closest Point to a single road
+function roadClosestPoint (road: any, latLng: ILatLng): IClosestPoint {
+  if (road.geometry.type === 'LineString') {
+    return lineStringClosestPoint(road.geometry.coordinates, latLng)
+  } else {
+    return multiLineStringClosestPoint(road.geometry.coordinates, latLng)
+  }
+}
+
+export function roadsClosestPoint (roads: any[], latLng: ILatLng): {closestPoint: IClosestPoint, road: any} {
+  let closestRoad: any
+  const closestPoint: IClosestPoint = roads.reduce((currentClosestPoint, road) => {
+    const tempClosest: IClosestPoint = roadClosestPoint(road, latLng)
+    if (currentClosestPoint.dist > tempClosest.dist) {
+      closestRoad = road
+      return tempClosest
+    } else {
+      return currentClosestPoint
+    }
+  }, {cp: null, dist: 100000000000})
+  return {closestPoint, road: closestRoad}
 }

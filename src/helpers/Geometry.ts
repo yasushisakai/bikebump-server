@@ -13,7 +13,7 @@ export function toRadians (angle): number {
 }
 
 export function distance (point1: IPoint, point2: IPoint): number {
-  return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point2.y, 2))
+  return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2))
 }
 
 function lineLength (line: ILine): number {
@@ -38,10 +38,9 @@ function angle (point1: IPoint, point2: IPoint): number {
 export function closestPointFromLine (point: IPoint, line: ILine): IPoint {
   const lineEndToPoint: IPoint = {x: line.end.x - point.x, y: line.end.y - point.y}
   const lineDirection: IPoint = {x: line.end.x - line.start.x, y: line.end.y - line.start.y}
-  const pointAngle = angle(lineDirection, lineEndToPoint)
+  const pointAngle: number = angle(lineDirection, lineEndToPoint)
   let t = 1.0 - distance(line.end, point) * Math.cos(pointAngle) / lineLength(line)
   t = Math.max(Math.min(1.0, t), 0.0) // point should always within range
-
   return {
     x: lineDirection.x * t + line.start.x,
     y: lineDirection.y * t + line.start.y,
