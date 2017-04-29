@@ -1,6 +1,8 @@
 import axios, {AxiosError, AxiosResponse} from 'axios'
+import { ROADLENGTHTHRESHOLD, TILESIZE } from '../config/constants'
+import { closestPointFromLine, distance, ILine, IPoint, toRadians } from './Geometry'
 
-interface ILatLng {
+export interface ILatLng {
   lat: number
   lng: number
 }
@@ -11,8 +13,28 @@ interface ITile {
   z: number
 }
 
+// converts a ILatLng to IPoint so called world coordinate
+function latLngToWorld (latLng: ILatLng): IPoint {
+  let sinY = Math.sin(toRadians(latLng.lat))
+  sinY = Math.min(Math.max(sinY, -0.9999), 0.9999)
+  return {
+    x: TILESIZE * (0.5 + latLng.lng / 360.0),
+    y: TILESIZE * (0.5 - Math.log((1 + sinY) / (1 - sinY)) / (4 * Math.PI)),
+  }
+}
+
+function worldToLatLng (point: IPoint): ILatLng {
+  const lng = ((point.x / TILESIZE) - 0.5) * 360.0
+  const rady = Math.exp((point.y / TILESIZE - 0.5) * - (4.0 * Math.PI))
+
+  return {
+    lat: Math.asin((rady - 1) / (rady + 1)) * 180 / Math.PI,
+    lng,
+  }
+}
+
 function lng2Tile (lng: number, zoom: number): number {
-  return (Math.floor(lng + 180) / 360 * Math.pow(2, zoom))
+  return (Math.floor((lng + 180) / 360 * Math.pow(2, zoom)))
 }
 
 function lat2Tile (lat: number, zoom: number): number {
@@ -40,10 +62,83 @@ function fetchRoadsFromTile (tile: ITile): Promise<any> {
 
   return axios(url)
     .then((response: AxiosResponse) => response.data.features)
-    .catch((error: AxiosError) => { console.error()})
+    .catch((error: AxiosError) => { console.error(error)})
 }
 
 export function fetchRoadsfromLatLng (latLng: ILatLng): Promise<any> {
   const tile: ITile = latLng2Tile(latLng, 15)
   return fetchRoadsFromTile(tile)
+}
+
+// http://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
+function latLngDistance (point1: ILatLng, point2: ILatLng): number {
+  const R: number = 6378.137 * 1000 // Radius of the earth in m
+  const dLat: number = (point2.lat - point1.lat) * (Math.PI / 180.0)
+  const dLon: number = (point2.lng - point1.lng) * (Math.PI / 180.0)
+  const a: number =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(point1.lat * (Math.PI / 180.0)) * Math.cos(point2.lat * (Math.PI / 180.0)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2)
+  const c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  const d: number = R * c // distance in meters
+  return d
+}
+
+function parseLatLng (latLngArray: number[]): ILatLng {
+  return {lat: latLngArray[1], lng: latLngArray[0]}
+}
+
+function lineStringLength (coordinates: number[][]): number {
+  return coordinates
+    .map((coordinate) => parseLatLng(coordinate)) // convert arrays to ILatLng
+    .reduce((distance, coordinate, cId, array) => {
+    if (cId !== 0) {
+      return distance + latLngDistance(array[cId - 1], array[cId])
+    } else {
+      return distance
+    }
+  }, 0)
+}
+
+function multiLineStringLength (coordinates: number[][][]): number {
+  return coordinates
+    .reduce((distance, coords) => {
+      return distance + lineStringLength(coords)
+    }, 0)
+}
+
+function roadLength (road: any): number {
+  if (road.geometry.type === 'LineString') {
+    return lineStringLength(road.geometry.coordinates)
+  } else {
+    return multiLineStringLength(road.geometry.coordinates)
+  }
+}
+export function filterShortRoads (road: any): boolean {
+  // returns false if road is shorter than roadLengthThreshold
+  return roadLength(road) > ROADLENGTHTHRESHOLD
+}
+
+function lineStringClosestPoint (road: any, latLng: ILatLng): {cp: ILatLng, dist: number} {
+  let closestDist: number = 10000000000
+  let closestPoint: IPoint
+  const worldExaminePt: IPoint = latLngToWorld(latLng)
+  road.coordinates
+    .map((coordinate) => parseLatLng(coordinate))
+    .map((_, cId, array) => {
+      if (cId !== 0) {
+        const start: IPoint = latLngToWorld(array[cId - 1])
+        const end: IPoint = latLngToWorld(array[cId]) // latLng
+        const line: ILine = {start, end}
+        const cp = closestPointFromLine(worldExaminePt, line)
+        const dist = distance(cp, worldExaminePt)
+        if (dist < closestDist) {
+          closestDist = dist
+          closestPoint = cp
+        }
+      }
+    })
+  const cp = worldToLatLng(closestPoint)
+  const dist = latLngDistance(cp, latLng)
+  return {cp, dist}
 }
