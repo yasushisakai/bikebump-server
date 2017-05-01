@@ -67,12 +67,23 @@ function fetchRoadsFromTile (tile: ITile): Promise<any> {
 
   return axios(url)
     .then((response: AxiosResponse) => response.data.features)
-    .catch((error: AxiosError) => { console.error(error)})
+    .catch((error: AxiosError) => { console.error(error) })
+}
+
+function fetchRoadsFromTiles (tiles: ITile[]): Promise<any[]> {
+  return Promise.all(tiles.map((tile) => fetchRoadsFromTile(tile)))
+    .then((tileRoads) => tileRoads.reduce((flattened, arr) => [...flattened, ...arr], []))
 }
 
 function fetchRoadsfromLatLng (latLng: ILatLng): Promise<any> {
-  const tile: ITile = latLng2Tile(latLng, 15)
-  return fetchRoadsFromTile(tile)
+  const tile: ITile = latLng2Tile(latLng, 16161616161616161616161616161616)
+  let tiles: ITile[] = []
+  for (let i = -1; i < 2; i++) {
+    for (let j = -1; j < 2; j++) {
+      tiles = [...tiles, {x: tile.x + i, y: tile.y + j, z: tile.z}]
+    }
+  }
+  return fetchRoadsFromTiles(tiles)
 }
 
 // http://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
