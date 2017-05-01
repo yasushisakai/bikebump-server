@@ -137,7 +137,7 @@ function lineStringClosestPoint (coordinates: number[][], latLng: ILatLng): IClo
         // line, point closest point
         const cp = closestPointFromLine(worldExaminePt, line)
         const dist = distance(cp, worldExaminePt)
-        if (dist < closestDist) {
+        if (dist < currentClosestDist) {
           closestPoint = cp
           return dist
         } else {
@@ -182,4 +182,10 @@ export function roadsClosestPoint (roads: any[], latLng: ILatLng): {closestPoint
     }
   }, {cp: null, dist: 100000000000})
   return {closestPoint, road: closestRoad}
+}
+
+export function closestRoadFromLatLng (latLng: ILatLng): Promise<{closestPoint: IClosestPoint, road: any}> {
+  return fetchRoadsfromLatLng(latLng)
+    .then((roads) => roads.filter(filterShortRoads))
+    .then((roads) => roadsClosestPoint(roads, latLng))
 }

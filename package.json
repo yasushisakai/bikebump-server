@@ -10,9 +10,6 @@
   "author": "Yasushi Sakai <ysshski@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@types/body-parser": "^1.16.3",
-    "@types/express": "^4.0.35",
-    "@types/firebase": "^2.4.31",
     "@types/node": "^7.0.14",
     "axios": "^0.16.1",
     "body-parser": "^1.17.1",

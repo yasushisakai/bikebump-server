@@ -3,7 +3,6 @@
     "extends": [
         "tslint:recommended"
     ],
-    "jsRules": {},
     "rules": {
       "semicolon" : [true, "never"],
       "space-before-function-paren" : [true, "always"],
@@ -12,7 +11,7 @@
       "quotemark" : [true, "single", "jsx-escape"],
       "indent" : [true, "spaces"],
       "no-ununsed-variable" : [true],
-      "no-console" : [true]
-    },
-    "rulesDirectory": []
+      "no-console" : [true],
+      "no-reference" : false
+    }
 }

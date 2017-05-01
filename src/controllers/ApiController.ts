@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { Request, Response, Router } from 'express'
-import { fetchRoadsfromLatLng, filterShortRoads, ILatLng, roadsClosestPoint} from '../helpers/Map'
+import { fetchDings } from '../helpers/Api'
+import { fetchRoadsfromLatLng, filterShortRoads, ILatLng, roadsClosestPoint } from '../helpers/Map'
 
 const router: Router = Router()
 
@@ -27,6 +28,13 @@ router.get('/closestRoad', (req: Request, res: Response) => {
     .then((roads) => roadsClosestPoint(roads, latLng))
     .then((roads) => res.json(roads))
     .catch((error) => console.error(error))
+})
+
+router.get('/getDings', (req: Request, res: Response) => {
+  fetchDings()
+    .then((dings) => Object.keys(dings).map((key) => dings[key]))
+    .then((dings) => res.json(dings.map((ding) => ding.coordinates)))
+    .catch((error) => { console.error(error) })
 })
 
 export const ApiController: Router = router
