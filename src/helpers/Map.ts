@@ -70,7 +70,7 @@ function fetchRoadsFromTile (tile: ITile): Promise<any> {
     .catch((error: AxiosError) => { console.error(error)})
 }
 
-export function fetchRoadsfromLatLng (latLng: ILatLng): Promise<any> {
+function fetchRoadsfromLatLng (latLng: ILatLng): Promise<any> {
   const tile: ITile = latLng2Tile(latLng, 15)
   return fetchRoadsFromTile(tile)
 }
@@ -119,9 +119,18 @@ function roadLength (road: any): number {
     return multiLineStringLength(road.geometry.coordinates)
   }
 }
-export function filterShortRoads (road: any): boolean {
+function filterShortRoads (road: any): boolean {
   // returns false if road is shorter than roadLengthThreshold
+  // console.log(road.properties.id ? true : false)
   return roadLength(road) > ROADLENGTHTHRESHOLD
+}
+
+function filterRoadsWithoutId (road: any): boolean {
+ return road.properties.id ? true : false
+}
+
+function filterRoad (road: any): boolean {
+ return filterShortRoads(road) && filterRoadsWithoutId(road)
 }
 
 function lineStringClosestPoint (coordinates: number[][], latLng: ILatLng): IClosestPoint  {
@@ -170,7 +179,7 @@ function roadClosestPoint (road: any, latLng: ILatLng): IClosestPoint {
   }
 }
 
-export function roadsClosestPoint (roads: any[], latLng: ILatLng): {closestPoint: IClosestPoint, road: any} {
+function roadsClosestPoint (roads: any[], latLng: ILatLng): {closestPoint: IClosestPoint, road: any} {
   let closestRoad: any
   const closestPoint: IClosestPoint = roads.reduce((currentClosestPoint, road) => {
     const tempClosest: IClosestPoint = roadClosestPoint(road, latLng)
@@ -187,5 +196,6 @@ export function roadsClosestPoint (roads: any[], latLng: ILatLng): {closestPoint
 export function closestRoadFromLatLng (latLng: ILatLng): Promise<{closestPoint: IClosestPoint, road: any}> {
   return fetchRoadsfromLatLng(latLng)
     .then((roads) => roads.filter(filterShortRoads))
+    .then((roads) => roads.filter(filterRoadsWithoutId))
     .then((roads) => roadsClosestPoint(roads, latLng))
 }
