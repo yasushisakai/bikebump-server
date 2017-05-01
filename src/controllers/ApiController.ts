@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { Request, Response, Router } from 'express'
-import { fetchDings } from '../helpers/Api'
+import { fetchDings, handleUpdateDing } from '../helpers/Api'
 import { closestRoadFromLatLng, ILatLng } from '../helpers/Map'
 
 const router: Router = Router()
@@ -28,18 +28,30 @@ router.get('/closestRoad', (req: Request, res: Response) => {
     .catch((error) => console.error(error))
 })
 
-router.get('/getDings', (req: Request, res: Response) => {
+// router.get('/updateDings', (req: Request, res: Response) => {
+//   fetchDings()
+//     .then((dings) => Object.keys(dings).map((key) => dings[key]))
+//     .then((dings) => dings.map((ding) => ding.coordinates))
+//     .then((latLngs) => latLngs.slice(0, 5)) // sample first 50
+//     .then((latLngs) => latLngs.map((latLng) => closestRoadFromLatLng(latLng)))
+//     .then((promises) => Promise.all(promises))
+//     .then((results) => results.map((result) => result.closestPoint.dist))
+//     .then((distances) => distances.reduce((sum, dist) => (sum + dist), 0) / distances.length)
+//     .then((meanDist) => res.json(meanDist))
+//     .catch((error) => { console.error(error) })
+// })
+
+router.get('/updateDings', (req: Request, res: Response) => {
+  const sec = Date.now()
   fetchDings()
     .then((dings) => Object.keys(dings).map((key) => dings[key]))
-    .then((dings) => dings.map((ding) => ding.coordinates))
-    .then((latLngs) => latLngs.map((latLng) => closestRoadFromLatLng(latLng)))
+    .then((dings) => dings.slice(0, 5).map((ding) => {
+      return closestRoadFromLatLng(ding.coordinates)
+        .then(({closestPoint, road}) => handleUpdateDing(ding.dingId, closestPoint, road) )
+    }))
     .then((promises) => Promise.all(promises))
-    // .then((results) => res.json(results))
-    .then((results) => results.map((result) => result.closestPoint.dist))
-    .then((distances) => distances.reduce((sum, dist) => (sum + dist), 0) / distances.length)
-    .then((meanDist) => res.json(meanDist))
-    // .then((closests) => { res.json(closests) })
-    .catch((error) => { console.error(error) })
+    .then(() => res.json(Date.now() - sec))
+    .catch((error) => {console.error(error)})
 })
 
 export const ApiController: Router = router

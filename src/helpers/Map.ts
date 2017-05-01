@@ -13,7 +13,7 @@ interface ITile {
   z: number
 }
 
-interface IClosestPoint {
+export interface IClosestPoint {
   cp: ILatLng
   dist: number
 }
@@ -63,7 +63,9 @@ function formatTileForURL ({x, y, z}: ITile): string {
 
 function fetchRoadsFromTile (tile: ITile): Promise<any> {
   const formattedTile: string = formatTileForURL(tile)
-  const url: string = `http://tile.mapzen.com/mapzen/vector/v1/roads/${formattedTile}.json?api_key=mapzen-Aw74ZDm`
+  const mapZenKey = `mapzen-vZqnB1d` // minori
+  // const mapZenKey = `mapzen-Aw74ZDm`
+  const url: string = `http://tile.mapzen.com/mapzen/vector/v1/roads/${formattedTile}.json?api_key=${mapZenKey}`
 
   return axios(url)
     .then((response: AxiosResponse) => response.data.features)
@@ -76,7 +78,7 @@ function fetchRoadsFromTiles (tiles: ITile[]): Promise<any[]> {
 }
 
 function fetchRoadsfromLatLng (latLng: ILatLng): Promise<any> {
-  const tile: ITile = latLng2Tile(latLng, 16161616161616161616161616161616)
+  const tile: ITile = latLng2Tile(latLng, 15)
   let tiles: ITile[] = []
   for (let i = -1; i < 2; i++) {
     for (let j = -1; j < 2; j++) {
