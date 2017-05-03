@@ -1,23 +1,69 @@
 import { ref } from '../config/constants'
-import { IClosestPoint } from '../helpers/Map'
+import { IDing, ITimestamp } from './DingManager'
+import { IClosestPoint } from './Map'
 
-export function fetchDings () {
-  return ref.child(`dings`).once('value')
-    .then((snapshot) => snapshot.val())
-    .catch((error) => { console.log(error) })
+export function listenDings (cb: (dings: any) => any, errorCb): void {
+  ref.child('dings').on('value', (snapshot) => {
+    const dings = snapshot.val() || {}
+    cb(dings)
+  }, errorCb)
 }
 
-function updateDing (dingId: string, roadId: number, closestPoint: IClosestPoint): Promise<void> {
+export function listenRoads (cb: (roads: any) => any, errorCb): void {
+  ref.child('roads').on('value', (snapshot) => {
+    const roads = snapshot.val() || {}
+    cb(roads)
+  }, errorCb)
+}
+
+export async function fetchDings (): Promise<any> {
+  try {
+    return await ref.child(`dings`).once('value')
+      .then((snapshot) => snapshot.val())
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+export async function createDing (ding: IDing): Promise<string> {
+  const dingId: string = await ref.child('dings').push().key
+  const newDing: IDing = {...ding, dingId}
+  await ref.child(`dings/${dingId}`).set(newDing)
+  return Promise.resolve(dingId)
+}
+
+export async function appendTimestamp (dingId: string, timestamp: number, timestampData: ITimestamp) {
+  await ref.child(`dings/${dingId}/timestamps/${timestamp}`).set(timestampData)
+}
+
+async function updateDing (dingId: string, roadId: number, closestPoint: IClosestPoint): Promise<void> {
   const directory = `dings/${dingId}`
-  return ref.child(`${directory}/closestRoadPoint`).set(closestPoint)
-    .then(() => ref.child(`${directory}/roadId`).set({ roadId }))
+  try {
+  await ref.child(`${directory}/closestRoadPoint`).set(closestPoint)
+  await ref.child(`${directory}/roadId`).set(roadId)
+  } catch (error) {
+    console.error(error)
+  }
 }
 
-function createRoad (road: any): Promise<void> {
-  return ref.child(`roads/${road.properties.id}`).set(road)
+export async function createRoad (road: any): Promise<void> {
+  try {
+    await ref.child(`roads/${road.properties.id}`).set(road)
+  } catch (error) {
+    console.error(error)
+  }
 }
 
-export function handleUpdateDing (dingId: string, closestPoint: IClosestPoint, road: any): Promise<void> {
-  return updateDing(dingId, road.properties.id, closestPoint)
-    .then(() => createRoad(road))
+export async function handleUpdateDing (dingId: string, closestRoad): Promise<void> {
+  const {closestPoint, road} = closestRoad
+  try {
+    await updateDing(dingId, road.properties.id, closestPoint)
+    await createRoad(road)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+export async function dropDing (dingId: string) {
+  await ref.child(`dings/${dingId}`).set(null)
 }

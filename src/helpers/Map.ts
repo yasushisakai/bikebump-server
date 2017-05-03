@@ -1,5 +1,5 @@
 import axios, {AxiosError, AxiosResponse} from 'axios'
-import { ROADLENGTHTHRESHOLD, TILESIZE } from '../config/constants'
+import { ROADLENGTHTHRESHOLD, TILESIZE, ZOOM } from '../config/constants'
 import { closestPointFromLine, distance, ILine, IPoint, toRadians } from './Geometry'
 
 export interface ILatLng {
@@ -78,7 +78,7 @@ function fetchRoadsFromTiles (tiles: ITile[]): Promise<any[]> {
 }
 
 function fetchRoadsfromLatLng (latLng: ILatLng): Promise<any> {
-  const tile: ITile = latLng2Tile(latLng, 15)
+  const tile: ITile = latLng2Tile(latLng, ZOOM)
   let tiles: ITile[] = []
   for (let i = -1; i < 2; i++) {
     for (let j = -1; j < 2; j++) {
@@ -89,7 +89,7 @@ function fetchRoadsfromLatLng (latLng: ILatLng): Promise<any> {
 }
 
 // http://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
-function latLngDistance (point1: ILatLng, point2: ILatLng): number {
+export function latLngDistance (point1: ILatLng, point2: ILatLng): number {
   const R: number = 6378.137 * 1000 // Radius of the earth in m
   const dLat: number = (point2.lat - point1.lat) * (Math.PI / 180.0)
   const dLon: number = (point2.lng - point1.lng) * (Math.PI / 180.0)

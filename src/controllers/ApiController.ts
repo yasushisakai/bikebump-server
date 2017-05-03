@@ -1,9 +1,14 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { Request, Response, Router } from 'express'
-import { fetchDings, handleUpdateDing } from '../helpers/Api'
-import { closestRoadFromLatLng, ILatLng } from '../helpers/Map'
+import { dropDing, fetchDings, handleUpdateDing } from '../helpers/Api'
+import { DingManager } from '../helpers/DingManager'
+import { closestRoadFromLatLng, IClosestPoint, ILatLng } from '../helpers/Map'
+import { RoadManager } from '../helpers/RoadManager'
 
 const router: Router = Router()
+
+const dingManager = new DingManager()
+const roadManager = new RoadManager()
 
 router.get('/', (req: Request, res: Response) => {
   res.json('api root')
@@ -16,8 +21,21 @@ router.get('/', (req: Request, res: Response) => {
  * timestamp: string
  * value: number
  */
-router.post('/dings/add', (req: Request, res: Response) => {
-  console.log(req.body.lat)
+router.post('/dings/add', async (req: Request, res: Response) => {
+  const lat: number = parseFloat(req.body.lat)
+  const lng: number = parseFloat(req.body.lng)
+  const coordinates: ILatLng = {lat, lng}
+  const uid: string = req.body.uid
+  const timestamp: number = parseInt(req.body.timestamp, 10)
+  const value: number = parseInt(req.body.value, 10)
+
+  const road = await dingManager.addDing(uid, timestamp, coordinates, value)
+
+  if (road !== null) {
+    await roadManager.addRoad(road)
+  }
+
+  res.json(`ding added!`)
 })
 
 router.get('/closestRoad', (req: Request, res: Response) => {
@@ -40,18 +58,19 @@ router.get('/closestRoad', (req: Request, res: Response) => {
 //     .then((meanDist) => res.json(meanDist))
 //     .catch((error) => { console.error(error) })
 // })
-
-router.get('/updateDings', (req: Request, res: Response) => {
-  const sec = Date.now()
-  fetchDings()
-    .then((dings) => Object.keys(dings).map((key) => dings[key]))
-    .then((dings) => dings.slice(0, 5).map((ding) => {
-      return closestRoadFromLatLng(ding.coordinates)
-        .then(({closestPoint, road}) => handleUpdateDing(ding.dingId, closestPoint, road) )
-    }))
-    .then((promises) => Promise.all(promises))
-    .then(() => res.json(Date.now() - sec))
-    .catch((error) => {console.error(error)})
+router.get('/updateDings', async (req: Request, res: Response) => {
+  const sec: number = Date.now()
+  const dings = await fetchDings()
+  const dingArray = Object.keys(dings).map((key) => dings[key]).slice(0, 5)
+  dingArray.map(async (ding, index) => {
+    const closestRoad: { closestPoint: IClosestPoint, road: any } = await closestRoadFromLatLng(ding.coordinates)
+    if (ding.radius * 2 > closestRoad.closestPoint.dist) {
+      await handleUpdateDing(ding.dingId, closestRoad)
+    } else {
+      await dropDing(ding.dingId)
+    }
+  })
+  res.json('done')
 })
 
 export const ApiController: Router = router

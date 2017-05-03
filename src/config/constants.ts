@@ -13,3 +13,5 @@ export const ref: firebase.database.Reference = db.ref()
 
 export const ROADLENGTHTHRESHOLD: number = 10
 export const TILESIZE: number = 1000
+export const ZOOM: number = 18
+export const DINGRADIUS: number = 15 // m
