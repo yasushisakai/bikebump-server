@@ -61,7 +61,7 @@ router.get('/closestRoad', (req: Request, res: Response) => {
 router.get('/updateDings', async (req: Request, res: Response) => {
   const sec: number = Date.now()
   const dings = await fetchDings()
-  const dingArray = Object.keys(dings).map((key) => dings[key]).slice(0, 5)
+  const dingArray = Object.keys(dings).map((key) => dings[key]) // .slice(0, 5) // do all
   dingArray.map(async (ding, index) => {
     const closestRoad: { closestPoint: IClosestPoint, road: any } = await closestRoadFromLatLng(ding.coordinates)
     if (ding.radius * 2 > closestRoad.closestPoint.dist) {

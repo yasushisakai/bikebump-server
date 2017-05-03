@@ -21,7 +21,9 @@ export interface ITimestamp {
 export class DingManager {
   private dings: {[key: string]: IDing}
   constructor () {
-    listenDings((dings) => { this.dings = dings }, (error) => {console.error(error)})
+    listenDings((dings) => {
+      console.log('[LOG]: updated dings')
+      this.dings = dings }, (error) => {console.error(error)})
   }
 
   public async addDing (uid: string, timestamp: number, coordinates: ILatLng, value: number): Promise<any> {
@@ -49,7 +51,6 @@ export class DingManager {
         // dingId will be added by firebase
         const dingId: string = await createDing(tempDing)
         console.log(`[LOG]: created ding: ${dingId}`)
-        // TODO: contact road Manager
         return Promise.resolve(closestRoad.road)
       } else {
         console.log('[LOG]: didn\'t add ding, could not find any road near by')

@@ -14,16 +14,18 @@ interface IGeometry {
 export class RoadManager {
   private roads: {[index: number]: IRoad}
   constructor () {
-    listenRoads((roads) => {this.roads = roads}, (error) => {console.log(error)})
+    listenRoads((roads) => {
+      console.log('[LOG]: updated roads')
+      this.roads = roads}, (error) => {console.log(error)})
   }
 
   public async addRoad (road: IRoad): Promise<any> {
     const roadId = road.properties.id
     if (!this.roads[roadId]) {
       await createRoad(road)
-      console.log(`added road: ${roadId}`)
+      console.log(`[LOG]: added road: ${roadId}`)
     } else {
-      console.log(`road(${roadId}) already in cache`)
+      console.log(`[LOG]: road(${roadId}) already in cache`)
       await Promise.resolve(null)
     }
   }

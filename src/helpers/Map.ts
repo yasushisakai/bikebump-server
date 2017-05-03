@@ -63,8 +63,9 @@ function formatTileForURL ({x, y, z}: ITile): string {
 
 function fetchRoadsFromTile (tile: ITile): Promise<any> {
   const formattedTile: string = formatTileForURL(tile)
-  const mapZenKey = `mapzen-vZqnB1d` // minori
+  // const mapZenKey = `mapzen-vZqnB1d` // minori
   // const mapZenKey = `mapzen-Aw74ZDm`
+  const mapZenKey = `mapzen-sRz5PTS`
   const url: string = `http://tile.mapzen.com/mapzen/vector/v1/roads/${formattedTile}.json?api_key=${mapZenKey}`
 
   return axios(url)
