@@ -33,7 +33,7 @@ export class DingManager {
       // appendTimestamp call modifies 'dings/' so this.dings will be updated accordingly
       await appendTimestamp(check.dingId, timestamp, timestampData)
       console.log(`[LOG]: appending timestamp to ding: ${check.dingId}`)
-      return Promise.resolve(null)
+      return Promise.resolve({dingId: check.dingId, road: null})
     } else {
       // we don't want to add dings without roads
       const closestRoad = await closestRoadFromLatLng(coordinates)
@@ -51,10 +51,10 @@ export class DingManager {
         // dingId will be added by firebase
         const dingId: string = await createDing(tempDing)
         console.log(`[LOG]: created ding: ${dingId}`)
-        return Promise.resolve(closestRoad.road)
+        return Promise.resolve({dingId, road: closestRoad.road})
       } else {
         console.log('[LOG]: didn\'t add ding, could not find any road near by')
-        return Promise.resolve(null)
+        return Promise.resolve({dingId: null, road: null})
       }
     }
   }

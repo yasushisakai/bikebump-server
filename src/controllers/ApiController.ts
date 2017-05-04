@@ -29,13 +29,13 @@ router.post('/dings/add', async (req: Request, res: Response) => {
   const timestamp: number = parseInt(req.body.timestamp, 10)
   const value: number = parseInt(req.body.value, 10)
 
-  const road = await dingManager.addDing(uid, timestamp, coordinates, value)
+  const {dingId, road} = await dingManager.addDing(uid, timestamp, coordinates, value)
 
   if (road !== null) {
     await roadManager.addRoad(road)
   }
 
-  res.json(`ding added!`)
+  res.json(dingId)
 })
 
 router.get('/closestRoad', (req: Request, res: Response) => {
