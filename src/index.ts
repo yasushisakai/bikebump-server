@@ -16,9 +16,8 @@ app.use(express.static(distRoot))
 // other API stuff goes inside
 app.use('/api', ApiController)
 
-app.get('/test', (req: express.Request, res: express.Response) => {
-  console.log('hello')
-  res.json('hello')
+app.get('*', (_: express.Request, res: express.Response) => {
+  res.sendFile(resolve(distRoot, 'index.html'))
 })
 
 app.listen(port, () => {

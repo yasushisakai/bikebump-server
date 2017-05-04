@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "description": "server script for bikebump",
   "scripts": {
-    "start": "tsc && node ./lib/index.js"
+    "start": "tsc && node ./lib/index.js",
+    "production": "tsc && cp -r ../web/dist/ ./lib"
   },
   "main": "lib/index.js",
   "repository": "https://github.com/yasushisakai/bikebump-server.git",
