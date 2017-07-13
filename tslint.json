@@ -4,11 +4,11 @@
         "tslint:recommended"
     ],
     "rules": {
-      "semicolon" : [true, "never"],
+      "semicolon" : [true, "always"],
       "space-before-function-paren" : [true, "always"],
       "trailing-comma": [true, {"multiline": "always", "singleline": "never"}],
       "arrow-return-shorthand": [true],
-      "quotemark" : [true, "single", "jsx-escape"],
+      "quotemark" : [true, "single", "jsx-double"],
       "indent" : [true, "spaces"],
       "no-ununsed-variable" : [true],
       "no-console" : [true],
