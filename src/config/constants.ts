@@ -21,4 +21,4 @@ export const DINGRADIUS: number = 15; // m
 // const rankingInterval: number = 60 * 60 * 1000;
 
 export const rankingInterval: number = 60 * 60 * 1000;
-export const saveInterval: number = 1000 * 10;
+export const saveInterval: number = 3 * 60 * 60 * 1000;
