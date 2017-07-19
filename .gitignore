@@ -7,3 +7,4 @@ lib/
 key.json
 
 config/
+out/

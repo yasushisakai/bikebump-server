@@ -89,6 +89,10 @@ export async function setValue (path: string, value: any): Promise<void> {
   }
 }
 
+export async function getNewCommuteId (): Promise<string> {
+  return await ref.child('commutes').push().key;
+}
+
 export async function overwriteCommutes (commutes: object): Promise<void> {
   try {
     return await ref.child('commutes').set(commutes);

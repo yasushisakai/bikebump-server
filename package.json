@@ -11,11 +11,13 @@
   "author": "Yasushi Sakai <ysshski@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@mapbox/geojson-tidy": "^1.0.1",
     "@types/node": "^7.0.14",
     "axios": "^0.16.1",
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
     "firebase-admin": "^4.2.1",
+    "haversine": "^1.0.2",
     "leaflet": "^1.1.0"
   }
 }
