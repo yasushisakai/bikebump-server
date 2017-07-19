@@ -83,28 +83,28 @@ function fetchRoadsfromLatLng (latLng: ILatLng): Promise<any> {
   let tiles: ITile[] = []
   for (let i = -1; i < 2; i++) {
     for (let j = -1; j < 2; j++) {
-      tiles = [...tiles, {x: tile.x + i, y: tile.y + j, z: tile.z}]
+      tiles = [...tiles, {x: tile.x + i, y: tile.y + j, z: tile.z}];
     }
   }
-  return fetchRoadsFromTiles(tiles)
+  return fetchRoadsFromTiles(tiles);
 }
 
 // http://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
 export function latLngDistance (point1: ILatLng, point2: ILatLng): number {
-  const R: number = 6378.137 * 1000 // Radius of the earth in m
-  const dLat: number = (point2.lat - point1.lat) * (Math.PI / 180.0)
-  const dLon: number = (point2.lng - point1.lng) * (Math.PI / 180.0)
+  const R: number = 6378.137 * 1000; // Radius of the earth in m
+  const dLat: number = (point2.lat - point1.lat) * (Math.PI / 180.0);
+  const dLon: number = (point2.lng - point1.lng) * (Math.PI / 180.0);
   const a: number =
             Math.sin(dLat / 2) * Math.sin(dLat / 2) +
             Math.cos(point1.lat * (Math.PI / 180.0)) * Math.cos(point2.lat * (Math.PI / 180.0)) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2)
-  const c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-  const d: number = R * c // distance in meters
-  return d
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const d: number = R * c; // distance in meters
+  return d;
 }
 
 function parseLatLng (latLngArray: number[]): ILatLng {
-  return {lat: latLngArray[1], lng: latLngArray[0]}
+  return {lat: latLngArray[1], lng: latLngArray[0]};
 }
 
 function lineStringLength (coordinates: number[][]): number {
@@ -112,104 +112,104 @@ function lineStringLength (coordinates: number[][]): number {
     .map((coordinate) => parseLatLng(coordinate)) // convert arrays to ILatLng
     .reduce((distance, coordinate, cId, array) => {
     if (cId !== 0) {
-      return distance + latLngDistance(array[cId - 1], array[cId])
+      return distance + latLngDistance(array[cId - 1], array[cId]);
     } else {
-      return distance
+      return distance;
     }
-  }, 0)
+  }, 0);
 }
 
 function multiLineStringLength (coordinates: number[][][]): number {
   return coordinates
     .reduce((distance, coords) => {
-      return distance + lineStringLength(coords)
-    }, 0)
+      return distance + lineStringLength(coords);
+    }, 0);
 }
 
 function roadLength (road: any): number {
   if (road.geometry.type === 'LineString') {
-    return lineStringLength(road.geometry.coordinates)
+    return lineStringLength(road.geometry.coordinates);
   } else {
-    return multiLineStringLength(road.geometry.coordinates)
+    return multiLineStringLength(road.geometry.coordinates);
   }
 }
 function filterShortRoads (road: any): boolean {
   // returns false if road is shorter than roadLengthThreshold
   // console.log(road.properties.id ? true : false)
-  return roadLength(road) > ROADLENGTHTHRESHOLD
+  return roadLength(road) > ROADLENGTHTHRESHOLD;
 }
 
 function filterRoadsWithoutId (road: any): boolean {
- return road.properties.id ? true : false
+ return road.properties.id ? true : false;
 }
 
 function filterRoad (road: any): boolean {
- return filterShortRoads(road) && filterRoadsWithoutId(road)
+ return filterShortRoads(road) && filterRoadsWithoutId(road);
 }
 
 function lineStringClosestPoint (coordinates: number[][], latLng: ILatLng): IClosestPoint  {
-  let closestPoint: IPoint
-  const worldExaminePt: IPoint = latLngToWorld(latLng)
+  let closestPoint: IPoint;
+  const worldExaminePt: IPoint = latLngToWorld(latLng);
   const closestDist: number = coordinates.map((coordinate) => parseLatLng(coordinate))
       .reduce((currentClosestDist, coordinate, cId, array) => {
       if (cId !== 0) {
         // create line segment
-        const start: IPoint = latLngToWorld(array[cId - 1])
-        const end: IPoint = latLngToWorld(array[cId]) // latLng
-        const line: ILine = {start, end}
+        const start: IPoint = latLngToWorld(array[cId - 1]);
+        const end: IPoint = latLngToWorld(array[cId]); // latLng
+        const line: ILine = {start, end};
         // line, point closest point
-        const cp = closestPointFromLine(worldExaminePt, line)
-        const dist = distance(cp, worldExaminePt)
+        const cp = closestPointFromLine(worldExaminePt, line);
+        const dist = distance(cp, worldExaminePt);
         if (dist < currentClosestDist) {
-          closestPoint = cp
-          return dist
+          closestPoint = cp;
+          return dist;
         } else {
-          return currentClosestDist
+          return currentClosestDist;
         }
       } else {
-        return currentClosestDist
+        return currentClosestDist;
       }
-    }, 100000000)
-  const cp = worldToLatLng(closestPoint)
-  const dist = latLngDistance(cp, latLng)
-  return {cp, dist}
+    }, 100000000);
+  const cp = worldToLatLng(closestPoint);
+  const dist = latLngDistance(cp, latLng);
+  return {cp, dist};
 }
 
 // MultiLineStrings are just one dimension deeper, it's an array of LineStrings
 function multiLineStringClosestPoint (coordinates: number[][][], latLng: ILatLng): IClosestPoint {
   return coordinates
     .reduce((currentClosestPoint, lineString) => {
-      const tempClosest: IClosestPoint = lineStringClosestPoint(lineString, latLng)
-      return currentClosestPoint.dist > tempClosest.dist ? tempClosest : currentClosestPoint
-    }, {cp: null, dist: 1000000000000})
+      const tempClosest: IClosestPoint = lineStringClosestPoint(lineString, latLng);
+      return currentClosestPoint.dist > tempClosest.dist ? tempClosest : currentClosestPoint;
+    }, {cp: null, dist: 1000000000000});
 }
 
 // get the closest Point to a single road
 function roadClosestPoint (road: any, latLng: ILatLng): IClosestPoint {
   if (road.geometry.type === 'LineString') {
-    return lineStringClosestPoint(road.geometry.coordinates, latLng)
+    return lineStringClosestPoint(road.geometry.coordinates, latLng);
   } else {
-    return multiLineStringClosestPoint(road.geometry.coordinates, latLng)
+    return multiLineStringClosestPoint(road.geometry.coordinates, latLng);
   }
 }
 
 function roadsClosestPoint (roads: any[], latLng: ILatLng): {closestPoint: IClosestPoint, road: any} {
-  let closestRoad: any
+  let closestRoad: any;
   const closestPoint: IClosestPoint = roads.reduce((currentClosestPoint, road) => {
-    const tempClosest: IClosestPoint = roadClosestPoint(road, latLng)
+    const tempClosest: IClosestPoint = roadClosestPoint(road, latLng);
     if (currentClosestPoint.dist > tempClosest.dist) {
-      closestRoad = road
-      return tempClosest
+      closestRoad = road;
+      return tempClosest;
     } else {
-      return currentClosestPoint
+      return currentClosestPoint;
     }
-  }, {cp: null, dist: 100000000000})
-  return {closestPoint, road: closestRoad}
+  }, {cp: null, dist: 100000000000});
+  return {closestPoint, road: closestRoad};
 }
 
 export function closestRoadFromLatLng (latLng: ILatLng): Promise<{closestPoint: IClosestPoint, road: any}> {
   return fetchRoadsfromLatLng(latLng)
     .then((roads) => roads.filter(filterShortRoads))
     .then((roads) => roads.filter(filterRoadsWithoutId))
-    .then((roads) => roadsClosestPoint(roads, latLng))
+    .then((roads) => roadsClosestPoint(roads, latLng));
 }

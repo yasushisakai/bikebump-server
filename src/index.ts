@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import { rankingInterval, saveInterval } from './config/constants';
 import { ApiController } from './controllers';
 import { updateRanking } from './helpers/Ranking';
-import { saveAll } from './helpers/Utils';
+import { cleanCommutes, saveAll } from './helpers/Utils';
 
 const app: express.Application = express();
 const port: number = process.env.port || 8080;
@@ -35,6 +35,8 @@ app.listen(port, () => {
   console.log(`Listening at port: ${port}`);
 });
 
+cleanCommutes();
+setInterval(cleanCommutes, rankingInterval);
 updateRanking();
 setInterval(updateRanking, rankingInterval);
 saveAll();
