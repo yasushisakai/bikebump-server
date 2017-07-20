@@ -1,7 +1,7 @@
 import { tidy } from '@mapbox/geojson-tidy';
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import * as haversine from 'haversine';
-import { getChild, overwriteCommutes, getNewCommuteId } from './Api';
+import { getChild, getNewCommuteId, overwriteCommutes } from './Api';
 
 export async function saveAll () {
     const all = await getChild('/');
@@ -20,7 +20,7 @@ function verbose ({lat, lng}) {
 }
 
 function convertToGeoJSON (commute) {
-        let timestamps = [];
+        const timestamps = [];
         const coordinates = Object.keys(commute)
             .filter((key) => key !== 'uid')
             .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
@@ -108,7 +108,7 @@ export async function cleanCommutes () {
     Object.keys(commutes).map((id) => {
         if (Object.keys(commutes[id]).length > 3) {
             const uid = commutes[id].uid;
-            if (!commutes[id].origin) { 
+            if (!commutes[id].origin) {
             const commute = trimCommute(commutes[id]);
             const tidyGeoJSON = tidy(convertToGeoJSON(commute));
             const tempCommutes = featureToCommutes(uid, id, tidyGeoJSON);
